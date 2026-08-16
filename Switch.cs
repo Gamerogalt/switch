@@ -173,16 +173,25 @@ namespace Switch
             {
                 if (IsAltTabWindow(nextHwnd))
                 {
-                    // Trick to bypass foreground lock: simulate Alt key press
-                    keybd_event(VK_MENU, 0, 0, 0);
-                    keybd_event(VK_MENU, 0, KEYEVENTF_KEYUP, 0);
-                    
-                    SetForegroundWindow(nextHwnd);
-                    
-                    // Sometimes windows are minimized, we need to restore them
+                    uint fgThread = GetWindowThreadProcessId(currentHwnd, IntPtr.Zero);
+                    uint appThread = GetCurrentThreadId();
+
+                    bool attached = false;
+                    if (fgThread != 0 && fgThread != appThread)
+                    {
+                        attached = AttachThreadInput(appThread, fgThread, true);
+                    }
+
                     if (IsIconic(nextHwnd))
                     {
                         ShowWindow(nextHwnd, SW_RESTORE);
+                    }
+                    
+                    SetForegroundWindow(nextHwnd);
+                    
+                    if (attached)
+                    {
+                        AttachThreadInput(appThread, fgThread, false);
                     }
                     return;
                 }
@@ -248,7 +257,13 @@ namespace Switch
         static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
 
         [DllImport("user32.dll")]
-        static extern void keybd_event(byte bVk, byte bScan, uint dwFlags, int dwExtraInfo);
+        static extern uint GetWindowThreadProcessId(IntPtr hWnd, IntPtr ProcessId);
+
+        [DllImport("kernel32.dll")]
+        static extern uint GetCurrentThreadId();
+
+        [DllImport("user32.dll")]
+        static extern bool AttachThreadInput(uint idAttach, uint idAttachTo, bool fAttach);
 
         private const int MOD_ALT = 0x0001;
         private const int MOD_CONTROL = 0x0002;
