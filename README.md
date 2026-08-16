@@ -39,6 +39,11 @@ If you want to use a different key combination (like `F4`, `Caps Lock`, or `Ctrl
 2.  Click **"Change Hotkey..."**.
 3.  Press your new desired key combination. The app will save it automatically!
 
+## Troubleshooting ⚠️
+**Hotkey Not Working in Certain Apps?**
+If your hotkey works everywhere *except* when you are using certain applications (like Task Manager, Registry Editor, or some IDEs), it's because those applications are running as **Administrator**. Windows security prevents normal background apps from intercepting keys when an Admin window is in focus. 
+**Fix:** Run `Switch.exe` as Administrator, and it will work perfectly everywhere!
+
 ## For Developers 👨‍💻
 Want to see how it works or modify it yourself?
 *   `Switch.cs` contains the entire source code (C#).
