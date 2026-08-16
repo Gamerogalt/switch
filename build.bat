@@ -6,7 +6,7 @@ if not exist %CSC% (
     exit /b 1
 )
 echo Compiling Switch...
-%CSC% /target:winexe /out:Switch.exe Switch.cs
+%CSC% /target:winexe /win32manifest:app.manifest /out:Switch.exe Switch.cs
 if %errorlevel% neq 0 (
     echo Compilation failed.
     pause
